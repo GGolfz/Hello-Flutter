@@ -5,6 +5,10 @@ import '../models/meal.dart';
 
 class MealDetailScreen extends StatelessWidget {
   static final routeName = '/meal-detail';
+  final Function isFavorite;
+  final Function toggleFavorite;
+  MealDetailScreen(this.isFavorite, this.toggleFavorite);
+
   Widget buildSectionTitle(BuildContext context, String title) {
     return Container(
         child: Text(
@@ -63,22 +67,27 @@ class MealDetailScreen extends StatelessWidget {
     final mealDetails = DUMMY_MEALS.firstWhere((meal) => meal.id == mealId);
     print(mealDetails.title);
     return Scaffold(
-        appBar: AppBar(title: Text(mealTitle)),
-        body: SingleChildScrollView(
-            child: Column(
-          children: <Widget>[
-            Container(
-                height: 300,
-                width: double.infinity,
-                child: Image.network(
-                  mealDetails.imageUrl,
-                  fit: BoxFit.cover,
-                )),
-            buildSectionTitle(context, "Ingredients"),
-            buildContainer(buildIngredientsList(context, mealDetails)),
-            buildSectionTitle(context, "Steps"),
-            buildContainer(buildSteps(context, mealDetails))
-          ],
-        )));
+      appBar: AppBar(title: Text(mealTitle)),
+      body: SingleChildScrollView(
+          child: Column(
+        children: <Widget>[
+          Container(
+              height: 300,
+              width: double.infinity,
+              child: Image.network(
+                mealDetails.imageUrl,
+                fit: BoxFit.cover,
+              )),
+          buildSectionTitle(context, "Ingredients"),
+          buildContainer(buildIngredientsList(context, mealDetails)),
+          buildSectionTitle(context, "Steps"),
+          buildContainer(buildSteps(context, mealDetails))
+        ],
+      )),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(isFavorite(mealId) ? Icons.star : Icons.star_border),
+        onPressed: () => toggleFavorite(mealId),
+      ),
+    );
   }
 }
