@@ -37,6 +37,7 @@ class Products with ChangeNotifier {
       notifyListeners();
     }).catchError((error) {
       print(error);
+      throw error;
     });
   }
 
