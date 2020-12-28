@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import '../dummy_products.dart';
 import 'product.dart';
 
 class Products with ChangeNotifier {
   List<Product> _items = dummyProducts;
-
+  final _url =
+      'https://flutterlearn-c0a20-default-rtdb.firebaseio.com/products.json';
   List<Product> get items {
     return [..._items];
   }
@@ -14,15 +16,28 @@ class Products with ChangeNotifier {
     return _items.where((element) => element.isFavorite).toList();
   }
 
-  void addProduct(Product product) {
-    final newProduct = Product(
-        title: product.title,
-        description: product.description,
-        price: product.price,
-        imageUrl: product.imageUrl,
-        id: DateTime.now().toString());
-    _items.add(newProduct);
-    notifyListeners();
+  Future<void> addProduct(Product product) {
+    return http
+        .post(this._url,
+            body: json.encode({
+              'title': product.title,
+              'description': product.description,
+              'price': product.price,
+              'imageUrl': product.imageUrl,
+              'isFavorite': product.isFavorite
+            }))
+        .then((response) {
+      final newProduct = Product(
+          title: product.title,
+          description: product.description,
+          price: product.price,
+          imageUrl: product.imageUrl,
+          id: json.decode(response.body)['name']);
+      _items.add(newProduct);
+      notifyListeners();
+    }).catchError((error) {
+      print(error);
+    });
   }
 
   void updateProduct(String id, Product newProduct) {
